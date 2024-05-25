@@ -12,7 +12,6 @@
    - "Okay Music, pause" - to pause the music
    - "Okay Music, resume" - to resume the paused music
    - "Okay Music, again" - to replay the current song
-   - "exit" - to exit the application
 
 ## Comments
 
