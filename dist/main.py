@@ -6,6 +6,8 @@ import tkinter as tk
 import customtkinter as ctk
 from tkinter import messagebox
 import threading
+from tkinter import ttk
+from mutagen.mp3 import MP3
 
 # Inicjalizacja silnika rozpoznawania mowy (Speech Recognition)
 r = sr.Recognizer()
@@ -27,15 +29,32 @@ mixer.init()
 play_random = False
 current_song_index = 0
 
+# Funkcja do wczytywania długości utworu
+def get_song_length(song_path):
+    audio = MP3(song_path)
+    song_length = audio.info.length
+    return song_length
+
 # Funkcja do odtwarzania muzyki
 def play_music():
     global current_song_index
     if songs:
-        mixer.music.load(os.path.join(music_folder, songs[current_song_index]))
+        current_song_path = os.path.join(music_folder, songs[current_song_index])
+        song_length = get_song_length(current_song_path)
+        progress_bar['maximum'] = song_length
+        mixer.music.load(current_song_path)
         mixer.music.play()
         song_label.configure(text=f"Odtwarzanie: {songs[current_song_index]}")
+        update_progress_bar()  # Rozpoczęcie aktualizacji paska postępu
     else:
         song_label.configure(text="Brak piosenek w folderze MusicAssistant.")
+
+# Funkcja aktualizująca pasek postępu
+def update_progress_bar():
+    if mixer.music.get_busy():
+        current_time = mixer.music.get_pos() // 1000
+        progress_bar['value'] = current_time
+        root.after(1000, update_progress_bar)
 
 # Funkcja do odtwarzania następnej piosenki
 def next_song():
@@ -120,10 +139,10 @@ ctk.set_default_color_theme("dark-blue")
 
 root = ctk.CTk()
 root.title("Music Assistant")
-root.geometry("600x400")  # Zmieniona wielkość okna
+root.geometry("600x400")
 
 # Dodanie ikony
-icon_path = "icon.ico"  # Zmień na ścieżkę do swojej ikony
+icon_path = "icon.ico"
 if os.path.exists(icon_path):
     root.iconbitmap(icon_path)
 
@@ -133,8 +152,17 @@ frame.pack(pady=20, padx=20, fill="both", expand=True)
 title_label = ctk.CTkLabel(master=frame, text="Music Assistant", font=("Arial", 20))
 title_label.pack(pady=10)
 
+# Stylizacja paska postępu
+style = ttk.Style()
+style.theme_use('clam')
+style.configure("Horizontal.TProgressbar", troughcolor="#333333", background="#0078D7", bordercolor="#333333", lightcolor="#333333", darkcolor="#333333")
+
+# Przeniesienie paska postępu tuż pod etykietę z nazwą piosenki
 song_label = ctk.CTkLabel(master=frame, text="Brak piosenek w folderze MusicAssistant.", font=("Arial", 14))
 song_label.pack(pady=10)
+
+progress_bar = ttk.Progressbar(master=frame, style="Horizontal.TProgressbar", orient='horizontal', length=300, mode='determinate')
+progress_bar.pack(pady=10)
 
 play_button = ctk.CTkButton(master=frame, text="Play", command=play_music)
 play_button.pack(pady=5)
