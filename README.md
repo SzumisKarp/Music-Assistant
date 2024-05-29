@@ -12,11 +12,10 @@
    - "Okay Music, pause" - to pause the music
    - "Okay Music, resume" - to resume the paused music
    - "Okay Music, again" - to replay the current song
-   - "exit" - to exit the application
 
-## Contributing
+## Comments
 
-Contributions are welcome! If you have any suggestions or improvements, feel free to open an issue or create a pull request.
+Comments are welcome! If you have any suggestions or improvements, you can open an issue or create a pull request.
 
 ## License
 
