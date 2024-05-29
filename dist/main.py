@@ -80,10 +80,12 @@ def unpause_music():
 def play_same_song():
     play_music()
 
-# Funkcja do nasłuchiwania komend głosowych
+# Funkcja do nasłuchiwania komend głosowych z kalibracją
 def listen_command():
+    global r  # Ustawienie 'r' jako zmiennej globalnej
     while True:
         with sr.Microphone() as source:
+            r.adjust_for_ambient_noise(source, duration=1)  # Kalibracja mikrofonu
             print("Podaj komendę: ")
             audio = r.listen(source)
             try:
@@ -93,12 +95,17 @@ def listen_command():
                 print("Nie rozpoznano komendy.")
                 continue
             
+            # Resetowanie stanu rozpoznawania mowy
+            r = sr.Recognizer()
+            
             if "okay music" in command.lower():
                 listen_for_music_commands()
 
 # Funkcja do nasłuchiwania komend muzycznych
 def listen_for_music_commands():
+    global play_random, current_song_index
     with sr.Microphone() as source:
+        r.adjust_for_ambient_noise(source, duration=1)  # Kalibracja mikrofonu
         print("Nasłuchiwanie komend muzycznych: ")
         audio = r.listen(source)
         try:
@@ -107,8 +114,6 @@ def listen_for_music_commands():
         except sr.UnknownValueError:
             messagebox.showerror("Błąd", "Nie rozpoznano komendy.")
             return
-
-    global play_random, current_song_index
 
     if "play" in command.lower():
         play_music()
