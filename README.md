@@ -9,7 +9,7 @@
    - "Okay Music, previous" - to play the previous song
    - "Okay Music, play random" - to play a random song
    - "Okay Music, play normal" - to play a not random song
-   - "Okay Music, pause" - to pause the music
+   - "Okay Music, pause/stop" - to pause the music
    - "Okay Music, resume" - to resume the paused music
    - "Okay Music, again" - to replay the current song
 

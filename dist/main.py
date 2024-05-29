@@ -9,7 +9,7 @@ import threading
 from tkinter import ttk
 from mutagen.mp3 import MP3
 
-__version__ = '1.1.2'
+__version__ = '1.2.2'
 
 # Inicjalizacja silnika rozpoznawania mowy (Speech Recognition)
 r = sr.Recognizer()
@@ -26,6 +26,8 @@ songs = [song for song in os.listdir(music_folder) if song.endswith('.mp3')]
 
 # Inicjalizacja odtwarzacza muzyki
 mixer.init()
+mixer.set_num_channels(2)  # Ustawienie liczby kanałów na 2
+notification_channel = mixer.Channel(1)  # Utworzenie oddzielnego kanału dla dźwięków powiadomień
 
 # Zmienna do śledzenia trybu odtwarzania i aktualnie odtwarzanej piosenki
 play_random = False
@@ -109,6 +111,7 @@ def listen_for_music_commands():
     with sr.Microphone() as source:
         r.adjust_for_ambient_noise(source, duration=1)  # Kalibracja mikrofonu
         print("Nasłuchiwanie komend muzycznych: ")
+        notification_channel.play(mixer.Sound('pop.mp3'))  # Odtwórz dźwięk powiadomienia na oddzielnym kanale
         audio = r.listen(source)
         try:
             command = r.recognize_google(audio, language='en-EN')
@@ -117,28 +120,29 @@ def listen_for_music_commands():
             messagebox.showerror("Błąd", "Nie rozpoznano komendy.")
             return
 
-    if "play" in command.lower():
-        play_music()
-    elif "next" in command.lower():
-        next_song()
-    elif "previous" in command.lower():
-        previous_song()
-    elif "play random" in command.lower():
-        play_random = True
-        current_song_index = random.randint(0, len(songs) - 1)
-        play_music()
-    elif "play normal" in command.lower():
-        play_random = False
-        current_song_index = 0
-        play_music()
-    elif "pause" in command.lower() or "music stop" in command.lower():
-        pause_music()
-    elif "resume" in command.lower():
-        unpause_music()
-    elif "again" in command.lower():
-        play_same_song()
-    elif command.lower() == "exit":
-        root.quit()
+        # Obsługa komend muzycznych
+        if "play" in command.lower():
+            play_music()
+        elif "next" in command.lower():
+            next_song()
+        elif "previous" in command.lower():
+            previous_song()
+        elif "play random" in command.lower():
+            play_random = True
+            current_song_index = random.randint(0, len(songs) - 1)
+            play_music()
+        elif "play normal" in command.lower():
+            play_random = False
+            current_song_index = 0
+            play_music()
+        elif "pause" in command.lower() or "stop" in command.lower():
+            pause_music()
+        elif "resume" in command.lower():
+            unpause_music()
+        elif "again" in command.lower():
+            play_same_song()
+        elif command.lower() == "exit":
+            root.quit()
 
 # Tworzenie GUI
 ctk.set_appearance_mode("dark")
