@@ -9,6 +9,8 @@ import threading
 from tkinter import ttk
 from mutagen.mp3 import MP3
 
+__version__ = '1.1.2'
+
 # Inicjalizacja silnika rozpoznawania mowy (Speech Recognition)
 r = sr.Recognizer()
 
